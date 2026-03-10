@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.routers import tasks
+from app.mcp_server import mcp
 from app.config import settings
 
 
@@ -29,6 +30,10 @@ app.add_middleware(
 )
 
 app.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
+
+# Mount MCP server at /mcp — OpenClaw connects here
+mcp_app = mcp.streamable_http_app()
+app.mount("/mcp", mcp_app)
 
 
 @app.get("/health")
